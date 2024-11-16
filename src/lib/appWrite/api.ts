@@ -44,7 +44,7 @@ export async function saveUserToDB(user: {
 }) {
     try{
         const newUser = await databases.createDocument(
-            appwriteConfig.databaseID,
+            appwriteConfig.databaseId,
             appwriteConfig.userCollectionID,
             ID.unique(),
             user,
@@ -79,7 +79,7 @@ export async function getCurrentUser(): Promise<IUser | null> {
       if (!currentAccount) return null;
   
       const currentUser = await databases.listDocuments(
-        appwriteConfig.databaseID,
+        appwriteConfig.databaseId,
         appwriteConfig.userCollectionID,
         [Query.equal('accountId', currentAccount.$id)]
       );
@@ -120,55 +120,48 @@ export async function SignOutAccount(){
 
 }
 
-export async function createPost(post: INewPost){
-    try{
-        //upload img to storage
-        const uploadedFile = await uploadFile(post.file[0])
-
-        if(!uploadedFile) throw Error;
-
-        //get file url
-        
-        const fileUrl =await getFilePreview(uploadedFile.$id);
-
-        if(!fileUrl) {
-            await deleteFile(uploadedFile.$id)
-            throw Error;
+export async function createPost(post: INewPost) {
+    try {
+      // Upload file to appwrite storage
+      const uploadedFile = await uploadFile(post.file[0]);
+  
+      if (!uploadedFile) throw Error;
+  
+      // Get file url
+      const fileUrl = await getFilePreview(uploadedFile.$id);
+      if (!fileUrl) {
+        await deleteFile(uploadedFile.$id);
+        throw Error;
+      }
+  
+      // Convert tags into array
+      const tags = post.tags?.replace(/ /g, "").split(",") || [];
+  console.log(post)
+      // Create post
+      const newPost = await databases.createDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.postCollectionId,
+        ID.unique(),
+        {
+          creator: post.userId,
+          caption: post.caption,
+          imageUrl: fileUrl,
+          imageId: uploadedFile.$id,
+          location: post.location,
+          tags: tags,
         }
-
-        //convert tags in an array
-        const tags =  post.tags?.replace(/ /g, '').split(',') || []
-        //save post to database
-
-        const newPost = await databases.createDocument(
-            appwriteConfig.databaseID,
-            appwriteConfig.postCollectionID,
-            ID.unique(),
-            {
-                creator: post.userId,
-                caption: post.caption,
-                imageUrl: fileUrl,
-                imageId: uploadedFile.$id,
-                location: post.location,
-                tags: tags
-
-            }
-        )
-
-        if(!newPost) {
-            await deleteFile(uploadedFile.$id)
-            console.log(newPost)
-            throw Error
-        }
-        return newPost
-
-
+      );
+  
+      if (!newPost) {
+        await deleteFile(uploadedFile.$id);
+        throw Error;
+      }
+  console.log(newPost)
+      return newPost;
+    } catch (error) {
+      console.log(error);
     }
-    catch(error){
-        console.log(error)
-    }
-
-}
+  }
 
 export async function uploadFile(file: File){
     try{
@@ -216,5 +209,18 @@ export async function deleteFile(fileId:string) {
     catch(error){
         console.log(error)
     }
+    
+}
+
+export async function getRecentPosts() {
+    const posts = await databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.postCollectionId,
+        [Query.orderDesc('$createdAt'), Query.limit(20)]
+    )
+
+    if(!posts) throw Error;
+
+    return posts;
     
 }
