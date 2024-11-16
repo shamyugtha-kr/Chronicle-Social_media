@@ -11,3 +11,10 @@ export const SignUpValid = z.object({
     email: z.string().email(),
     password: z.string().min(8, {message:"the password must be atleast 8 characters"})
   })
+
+  export const PostValidation = z.object({
+    caption: z.string().min(5).max(2200),
+    file: z.custom<File[]>(),
+    location: z.string().min(2).max(100),
+    tags: z.string()
+  })

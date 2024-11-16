@@ -13,12 +13,12 @@ const BottomBar = () => {
               <Link
               to={link.route}
               key={link.label}
-              className={`${isActive && 'bg-primary-500 rounded-[10px]'} flex-center flex-col gap-1 p-2 transition`}>
+              className={`${isActive && 'bg-gradient-to-r from-[#ff218c] to-[#ff8d19] rounded-[10px]'} flex-center flex-col gap-1 p-2 transition`}>
                 <img
                 src={link.imgURL}
                 alt={link.label}
-                width={20}
-                height={20}
+                width={25}
+                height={25}
                 className={`group-hover:invert-white ${isActive && 'invert-white'}`}/>
                 <p className='tiny-medium text-light-2'>{link.label}</p>
 

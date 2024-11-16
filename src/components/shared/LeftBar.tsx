@@ -56,7 +56,7 @@ const LeftBar = () => {
             const isActive = pathname === link.route
             return(
               <li key={link.label}
-              className={`leftsidebar-link group ${isActive && 'bg-primary-500'}`}>
+              className={`leftsidebar-link group ${isActive && 'bg-gradient-to-r from-[#ff218c] to-[#ff8d19]'}`}>
 
               <NavLink
               to={link.route}

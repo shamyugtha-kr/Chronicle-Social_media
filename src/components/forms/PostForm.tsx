@@ -6,34 +6,58 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+
+import { Textarea } from "../ui/textarea"
+import FileUploader from "../shared/FileUploader"
+import { Input } from "../ui/input"
+import { PostValidation } from "@/lib/validation"
+import { Models } from "appwrite"
+import { useUserContext } from "@/context/AuthContext"
+import { useToast } from "@/hooks/use-toast"
+import { useNavigate } from "react-router-dom"
+import { useCreatePost } from "@/lib/react-query/quriesAndMutations"
  
-const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-})
+type PostFormProps = {
+  post? : Models.Document;
+}
 
-const PostForm = () => {
+const PostForm = ( {post} : PostFormProps) => {
 
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+  const{ mutateAsync: createPost, isPending: isLoadingCreate } = useCreatePost();
+  const {user} = useUserContext();
+  const {toast} = useToast()
+  const navigate = useNavigate()
+
+    const form = useForm<z.infer<typeof PostValidation>>({
+        resolver: zodResolver(PostValidation),
         defaultValues: {
-          username: "",
+          caption: post ? post?.caption : "",
+          file:[],
+          location:post ? post?.location : "",
+          tags:post ? post.tags.join(',') : ''
         },
       })
      
       // 2. Define a submit handler.
-      function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        console.log(values)
+      async function onSubmit(values: z.infer<typeof PostValidation>) {
+        const newPost = await createPost({
+          ...values,
+          userId: user.id,
+        })
+
+        if(!newPost){
+          toast({
+            title: 'Please try again.'
+          })
+          
+        } 
+        
+        navigate('/');
       }
 
 
@@ -47,16 +71,71 @@ const PostForm = () => {
           <FormItem>
             <FormLabel className="shad-form_label">Caption</FormLabel>
             <FormControl>
-              <Textarea placeholder="shadcn" {...field} />
+              <Textarea className="shad-textarea custom-scrollbar" {...field} />
             </FormControl>
-            <FormDescription>
-              This is your public display name.
-            </FormDescription>
-            <FormMessage />
+            <FormMessage  className="shad-form_message"/>
           </FormItem>
         )}
       />
-      <Button type="submit">Submit</Button>
+      <FormField
+        control={form.control}
+        name="file"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="shad-form_label">Add Photos</FormLabel>
+            <FormControl>
+              <FileUploader
+              fieldChange={field.onChange}
+              mediaUrl={post?.imageUrl}/>
+            </FormControl>
+            <FormMessage  className="shad-form_message"/>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="location"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="shad-form_label">Add Location</FormLabel>
+            <FormControl>
+              <Input type="text" className="shad-input" {...field}/>
+            </FormControl>
+            <FormMessage  className="shad-form_message"/>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="tags"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="shad-form_label">Add Tags
+              (seperated by comma" , ")
+            </FormLabel>
+            <FormControl>
+              <Input type="text" 
+              className="shad-input"
+              placeholder="Art, Learn, Nature" {...field}/>
+            </FormControl>
+            <FormMessage  className="shad-form_message"/>
+          </FormItem>
+        )}
+      />
+      <div className="flex gap-4 items-center justify-end">
+      <Button type="button"
+      className="shad-button_dark_4">
+        Cancel</Button>
+        <Button
+            type="submit"
+            className="shad-button_primary whitespace-nowrap"
+            disabled={isLoadingCreate}>
+            {(isLoadingCreate) }
+ Post
+          </Button>
+      </div>
+      
+      
     </form>
   </Form>
   )
