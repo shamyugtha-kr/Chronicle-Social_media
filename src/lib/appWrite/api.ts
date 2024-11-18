@@ -1,4 +1,4 @@
-import { INewPost, INewUser, IUser } from "@/types";
+import { INewPost, INewUser, IUpdatePost, IUser } from "@/types";
 import { account, appwriteConfig, avatars, databases, storage } from "./config";
 import { ID, ImageGravity, Query } from "appwrite";
 
@@ -71,40 +71,34 @@ console.log(error)
     }
 }
 
-export async function getCurrentUser(): Promise<IUser | null> {
+export async function getAccount() {
     try {
       const currentAccount = await account.get();
   
-      // If no current account is found, return null
-      if (!currentAccount) return null;
+      return currentAccount;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+export async function getCurrentUser() {
+    try {
+      const currentAccount = await getAccount();
+  
+      if (!currentAccount) throw Error;
   
       const currentUser = await databases.listDocuments(
         appwriteConfig.databaseId,
         appwriteConfig.userCollectionID,
-        [Query.equal('accountId', currentAccount.$id)]
+        [Query.equal("accountId", currentAccount.$id)]
       );
   
-      // If no user is found, return null
-      if (!currentUser || currentUser.documents.length === 0) return null;
+      if (!currentUser) throw Error;
   
-      // Return the first document found as IUser
-      const userDoc = currentUser.documents[0];
-  
-      // Assuming the document matches the IUser structure
-      const user: IUser = {
-        id: userDoc.accountId, // Assuming accountId maps to id in IUser
-        name: userDoc.name,
-        username: userDoc.username,
-        email: userDoc.email,
-        imageUrl: userDoc.imageUrl,
-        bio: userDoc.bio,
-      };
-  
-      return user;  // Successfully return the user as IUser
-  
+      return currentUser.documents[0];
     } catch (error) {
-      console.error('Error fetching current user:', error);
-      return null;  // Return null in case of any errors
+      console.log(error);
+      return null;
     }
   }
 
@@ -223,4 +217,144 @@ export async function getRecentPosts() {
 
     return posts;
     
+}
+
+export async function likePost(postId: string, likesArray: string[]) {
+    try{
+        const savedPost = await databases.updateDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.postCollectionId,
+            postId,
+            {
+                likes:likesArray
+            }
+        )
+        if(!savedPost) throw Error;
+
+        return savedPost
+
+    }
+    catch (error){
+        console.log(error)
+    }
+
+}
+
+export async function savePost(userId: string, postId: string) {
+    try {
+      const updatedPost = await databases.createDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.savesCollectionID,
+        ID.unique(),
+        {
+          user: userId,
+          post: postId,
+        }
+      );
+  
+      if (!updatedPost) throw Error;
+  
+      return updatedPost;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+export async function deleteSavedPost(savedRecordId: string) {
+    try{
+        const statusCode = await databases.deleteDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.savesCollectionID,
+            savedRecordId,
+        )
+        if(!statusCode) throw Error;
+
+        return { status: 'ok'}
+
+    }
+    catch (error){
+        console.log(error)
+    }
+
+}
+
+export async function getPostById(postId:string) {
+
+  try{
+    const post = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      postId
+    )
+
+    return post;
+
+  }
+  catch(error){
+    console.log(error)
+  }
+  
+}
+
+export async function updatePost(post: IUpdatePost) {
+  const hasFileToUpdate = post.file.length > 0;
+
+  try {
+    let image = {
+      imageUrl: post.imageUrl,
+      imageId: post.imageId,
+    };
+
+    if (hasFileToUpdate) {
+      // Upload new file to appwrite storage
+      const uploadedFile = await uploadFile(post.file[0]);
+      if (!uploadedFile) throw Error;
+
+      // Get new file url
+      const fileUrl = getFilePreview(uploadedFile.$id);
+      if (!fileUrl) {
+        await deleteFile(uploadedFile.$id);
+        throw Error;
+      }
+
+      image = { ...image, imageUrl: fileUrl, imageId: uploadedFile.$id };
+    }
+
+    // Convert tags into array
+    const tags = post.tags?.replace(/ /g, "").split(",") || [];
+
+    //  Update post
+    const updatedPost = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      post.postId,
+      {
+        caption: post.caption,
+        imageUrl: image.imageUrl,
+        imageId: image.imageId,
+        location: post.location,
+        tags: tags,
+      }
+    );
+
+    // Failed to update
+    if (!updatedPost) {
+      // Delete new file that has been recently uploaded
+      if (hasFileToUpdate) {
+        await deleteFile(image.imageId);
+      }
+
+      // If no new file uploaded, just throw error
+      throw Error;
+    }
+
+    // Safely delete old file after successful update
+    if (hasFileToUpdate) {
+      await deleteFile(post.imageId);
+    }
+
+    return updatedPost;
+  } catch (error) {
+    console.log(error);
+  }
 }
