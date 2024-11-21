@@ -7,7 +7,6 @@ import EditPost from "./EditPost";
 const Home = () => {
 
   const { data: posts, isPending :isPostLoading, isError: isErrorPosts} = useGetRecentPosts();
-console.log(posts)
   return (
 
     <div className="flex flex-1">
@@ -18,7 +17,11 @@ console.log(posts)
             <Loader/>
           ) : (
             <ul className=" flex flex-1 flex-col gap-9 w-full">
-              <EditPost/>
+              {posts?.documents.map((post: Models.Document) => (
+                <PostCard post={post}
+                key={post.caption}
+                />
+              ))}
             </ul>
           )}
         </div>

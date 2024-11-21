@@ -45,7 +45,7 @@ export async function saveUserToDB(user: {
     try{
         const newUser = await databases.createDocument(
             appwriteConfig.databaseId,
-            appwriteConfig.userCollectionID,
+            appwriteConfig.userCollectionId,
             ID.unique(),
             user,
         );
@@ -89,7 +89,7 @@ export async function getCurrentUser() {
   
       const currentUser = await databases.listDocuments(
         appwriteConfig.databaseId,
-        appwriteConfig.userCollectionID,
+        appwriteConfig.userCollectionId,
         [Query.equal("accountId", currentAccount.$id)]
       );
   
@@ -127,17 +127,14 @@ export async function createPost(post: INewPost) {
         await deleteFile(uploadedFile.$id);
         throw Error;
       }
-  
       // Convert tags into array
       const tags = post.tags?.replace(/ /g, "").split(",") || [];
-  console.log(post)
-      // Create post
       const newPost = await databases.createDocument(
         appwriteConfig.databaseId,
         appwriteConfig.postCollectionId,
         ID.unique(),
         {
-          creator: post.userId,
+          creator: post?.userId,
           caption: post.caption,
           imageUrl: fileUrl,
           imageId: uploadedFile.$id,
@@ -150,7 +147,6 @@ export async function createPost(post: INewPost) {
         await deleteFile(uploadedFile.$id);
         throw Error;
       }
-  console.log(newPost)
       return newPost;
     } catch (error) {
       console.log(error);
@@ -160,7 +156,7 @@ export async function createPost(post: INewPost) {
 export async function uploadFile(file: File){
     try{
         const uploadedFile = await storage.createFile(
-            appwriteConfig.storageID,
+            appwriteConfig.storageId,
             ID.unique(),
             file
         )
@@ -175,7 +171,7 @@ export async function uploadFile(file: File){
 export async function getFilePreview(fileId: string){
      try {
     const fileUrl = storage.getFilePreview(
-      appwriteConfig.storageID,
+      appwriteConfig.storageId,
       fileId,
       2000,
       2000,
@@ -195,7 +191,7 @@ export async function getFilePreview(fileId: string){
 export async function deleteFile(fileId:string) {
 
     try{
-        await storage.deleteFile(appwriteConfig.storageID, fileId)
+        await storage.deleteFile(appwriteConfig.storageId, fileId)
         return{ status : 'ok'}
 
     }
@@ -241,30 +237,32 @@ export async function likePost(postId: string, likesArray: string[]) {
 }
 
 export async function savePost(userId: string, postId: string) {
-    try {
-      const updatedPost = await databases.createDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.savesCollectionID,
-        ID.unique(),
-        {
-          user: userId,
-          post: postId,
-        }
-      );
-  
-      if (!updatedPost) throw Error;
-  
-      return updatedPost;
-    } catch (error) {
-      console.log(error);
-    }
+  console.log("userid",userId)
+  console.log("postid",postId)
+  try {
+    const updatedPost = await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.savesCollectionId,
+      ID.unique(),
+      {
+        user: userId,
+        post: postId,
+      }
+    );
+
+    if (!updatedPost) throw Error;
+
+    return updatedPost;
+  } catch (error) {
+    console.log(error);
+  }
   }
 
 export async function deleteSavedPost(savedRecordId: string) {
     try{
         const statusCode = await databases.deleteDocument(
             appwriteConfig.databaseId,
-            appwriteConfig.savesCollectionID,
+            appwriteConfig.savesCollectionId,
             savedRecordId,
         )
         if(!statusCode) throw Error;
@@ -286,7 +284,7 @@ export async function getPostById(postId:string) {
       appwriteConfig.postCollectionId,
       postId
     )
-
+console.log('abc',post)
     return post;
 
   }
@@ -311,7 +309,7 @@ export async function updatePost(post: IUpdatePost) {
       if (!uploadedFile) throw Error;
 
       // Get new file url
-      const fileUrl = getFilePreview(uploadedFile.$id);
+      const fileUrl = await getFilePreview(uploadedFile.$id);
       if (!fileUrl) {
         await deleteFile(uploadedFile.$id);
         throw Error;
@@ -357,4 +355,25 @@ export async function updatePost(post: IUpdatePost) {
   } catch (error) {
     console.log(error);
   }
+}
+
+export async function deletePost(postId: string, imageId: string){
+
+  if(!postId || imageId) throw Error;
+
+  try{
+    await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      postId
+    )
+
+    return { status : 'Okay'}
+    
+  }
+
+  catch(error){
+    console.log(error)
+  }
+
 }

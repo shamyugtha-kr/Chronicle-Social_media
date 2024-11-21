@@ -45,12 +45,12 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       const currentAccount = await getCurrentUser();
       if (currentAccount) {
         setUser({
-          id: currentAccount.id,
-          name: currentAccount.name,
-          username: currentAccount.username,
-          email: currentAccount.email,
-          imageUrl: currentAccount.imageUrl,
-          bio: currentAccount.bio,
+          id: currentAccount?.$id,
+          name: currentAccount?.name,
+          username: currentAccount?.username,
+          email: currentAccount?.email,
+          imageUrl: currentAccount?.imageUrl,
+          bio: currentAccount?.bio,
         });
         setIsAuthenticated(true);
 
@@ -78,6 +78,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
     checkAuthUser();
   }, []);
+
 
   const value = {
     user,
