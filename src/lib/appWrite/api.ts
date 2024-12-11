@@ -517,3 +517,54 @@ export async function updateUser (user: IUpdateUser){
   }
 
 }
+
+export async function getUserPosts(userId?: string){
+  if(!userId) return;
+
+  try{
+    const post = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      [Query.equal("creator", userId), Query.orderDesc("$createdAt")]
+    )
+
+    if(!post) throw Error;
+    return post;
+  }
+  catch(error) {
+    console.log(error)
+  }
+}
+
+export async function followUser(userId: string, ) {
+  try{
+   const currentUser = await getCurrentUser()
+   const User = await getUserById(userId)
+      const following = await databases.updateDocument(
+          appwriteConfig.databaseId,
+          appwriteConfig.userCollectionId,
+          currentUser?.$id || '',
+          {
+              following:currentUser?.following + 1 
+          }
+      )
+      if(!following) throw Error;
+
+      const followers = await databases.updateDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.userCollectionId,
+        userId,
+        {
+            followers:User?.followers + 1 
+        }
+    )
+    if(!followers) throw Error;
+
+      console.log(following)
+
+  }
+  catch (error){
+      console.log(error)
+  }
+
+}

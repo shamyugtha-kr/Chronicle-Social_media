@@ -1,6 +1,7 @@
 import { Models } from "appwrite"
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
+import { followUser } from "@/lib/appWrite/api";
 
 type UserCardProps = {
     user: Models.Document;
@@ -27,7 +28,9 @@ const UserCard = ({user}:UserCardProps) => {
 
      </div>
 
-     <Button type="button" size={"sm"} className="shad-button_primary px-5">
+     <Button type="button" size={"sm"} className="shad-button_primary px-5" onClick={() => {
+      followUser(user.$id)
+     }}>
       Follow
      </Button>
 
