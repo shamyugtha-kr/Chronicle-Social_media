@@ -545,7 +545,7 @@ export async function followUser(userId: string, ) {
           appwriteConfig.userCollectionId,
           currentUser?.$id || '',
           {
-              following:currentUser?.following + 1 
+              following: [...currentUser?.following, User?.$id]
           }
       )
       if(!following) throw Error;
@@ -555,12 +555,49 @@ export async function followUser(userId: string, ) {
         appwriteConfig.userCollectionId,
         userId,
         {
-            followers:User?.followers + 1 
+            followers: [...User?.followers, currentUser?.$id]
         }
     )
     if(!followers) throw Error;
 
-      console.log(following)
+      console.log(userId)
+      console.log(currentUser?.$id)
+
+  }
+  catch (error){
+      console.log(error)
+  }
+
+}
+
+export async function unFollowUser(userId: string, ) {
+  try{
+   const currentUser = await getCurrentUser()
+   const User = await getUserById(userId)
+   const newFollowingList = currentUser?.following.filter((id:string) => id !== userId)
+   const newFollowersList = User?.followers.filter((id: string) => id !== currentUser?.$id)
+      const following = await databases.updateDocument(
+          appwriteConfig.databaseId,
+          appwriteConfig.userCollectionId,
+          currentUser?.$id || '',
+          {
+              following: newFollowingList
+          }
+      )
+      if(!following) throw Error;
+
+      const followers = await databases.updateDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.userCollectionId,
+        userId,
+        {
+            followers: newFollowersList
+        }
+    )
+    if(!followers) throw Error;
+
+      console.log(userId)
+      console.log(currentUser?.$id)
 
   }
   catch (error){

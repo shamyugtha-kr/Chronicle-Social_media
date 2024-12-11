@@ -1,10 +1,11 @@
 import GridPostList from "@/components/shared/GridPostList";
-import Loader from "@/components/shared/Loader";
-import { Button } from "@/components/ui/button";
+
 import { useUserContext } from "@/context/AuthContext";
 import { useGetUserById } from "@/lib/react-query/quriesAndMutations";
 import { Link, Outlet, Route, Routes, useLocation, useParams } from "react-router-dom";
 import LikedPost from "./LikedPost";
+import Loader from "@/components/shared/Loader";
+import FollowButton from "@/components/shared/FollowButton";
 
 type StabBlockProps = {
   value: string | number;
@@ -31,6 +32,8 @@ const { pathname } = useLocation();
       </div>
     )
   }
+
+ 
   return (
     <div className="profile-container">
       <div className="profile-inner_container">
@@ -54,8 +57,8 @@ const { pathname } = useLocation();
 
           <div className="flex gap-8 mt-10 items-center justify-center xl:justify-start flex-wrap z-20">
               <StatBlock value={currentUser.posts.length} label="Posts" />
-              <StatBlock value={currentUser.followers} label="Followers" />
-              <StatBlock value={currentUser.following} label="Following" />
+              <StatBlock value={currentUser.followers.length} label="Followers" />
+              <StatBlock value={currentUser.following.length} label="Following" />
             </div>
 
             <p className="small-medium md:base-medium text-center xl:text-left mt-7 max-w-screen-sm">
@@ -84,9 +87,7 @@ const { pathname } = useLocation();
             </div>
 
             <div className={`${user.id === id && "hidden"}`}>
-              <Button type="button" className="shad-button_primary px-8">
-                Follow
-              </Button>
+              <FollowButton userId = {id || ''}/>
             </div>
           </div>
        </div> 
