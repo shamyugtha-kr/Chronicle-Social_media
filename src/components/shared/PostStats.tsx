@@ -79,8 +79,8 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
               : "/assets/icons/like.svg"
           }`}
           alt="like"
-          width={20}
-          height={20}
+          width={24}
+          height={24}
           onClick={(e) => handleLikePost(e)}
           className="cursor-pointer"
         />
@@ -91,8 +91,8 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
         <img
           src={isSaved ? "/assets/icons/saved.svg" : "/assets/icons/save.svg"}
           alt="share"
-          width={20}
-          height={20}
+          width={24}
+          height={24}
           className="cursor-pointer"
           onClick={(e) => handleSavePost(e)}
         />

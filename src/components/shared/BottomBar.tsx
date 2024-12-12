@@ -13,7 +13,7 @@ const BottomBar = () => {
               <Link
               to={link.route}
               key={link.label}
-              className={`${isActive && 'bg-gradient-to-r from-[#ff218c] to-[#ff8d19] rounded-[10px]'} flex-center flex-col gap-1 p-2 transition`}>
+              className={`${isActive && 'bg-gradient-to-r from-[#e54942] to-[#6b0f75] rounded-[10px]'} flex-center flex-col gap-1 p-2 transition`}>
                 <img
                 src={link.imgURL}
                 alt={link.label}

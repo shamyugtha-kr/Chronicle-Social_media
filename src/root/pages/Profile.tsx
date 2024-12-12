@@ -77,8 +77,8 @@ const { pathname } = useLocation();
                 <img
                   src={"/assets/icons/edit.svg"}
                   alt="edit"
-                  width={20}
-                  height={20}
+                  width={24}
+                  height={24}
                 />
                 <p className="flex whitespace-nowrap small-medium">
                   Edit Profile
@@ -86,8 +86,8 @@ const { pathname } = useLocation();
               </Link>
             </div>
 
-            <div className={`${user.id === id && "hidden"}`}>
-              <FollowButton userId = {id || ''}/>
+            <div className={`${user.id === id && "hidden"}`} >
+              <FollowButton userId = {id || ''} />
             </div>
           </div>
        </div> 
@@ -110,8 +110,8 @@ const { pathname } = useLocation();
           }`}>
           <img src="/assets/icons/like.svg"
           alt="like"
-          width={20}
-          height={20}/>
+          width={24}
+          height={24}/>
           Liked Posts</Link>
         </div>
       )}

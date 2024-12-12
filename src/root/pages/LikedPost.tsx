@@ -16,7 +16,7 @@ const LikedPost = () => {
   return (
     <>
     {currentUser.liked.length === 0 && (
-      <p className="text-light-4">No liked posts</p>
+      <p className="text-light-4">No liked posts to show</p>
     )}
 
     <GridPostList posts={currentUser.liked} showStats={false} />

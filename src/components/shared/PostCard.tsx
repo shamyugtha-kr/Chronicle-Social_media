@@ -52,8 +52,8 @@ const PostCard = ({ post }: PostCardProps) => {
           <img
             src={"/assets/icons/edit.svg"}
             alt="edit"
-            width={20}
-            height={20}
+            width={24}
+            height={24}
           />
         </Link>
       </div>

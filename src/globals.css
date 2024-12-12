@@ -223,7 +223,7 @@
   }
 
   .leftsidebar-link {
-    @apply rounded-lg base-medium hover:bg-gradient-to-r from-[#ff218c] to-[#ff8d19] transition;
+    @apply rounded-lg base-medium hover:bg-gradient-to-r from-[#e54942] to-[#6b0f75] transition;
   }
 
   /* Post Card */
@@ -267,7 +267,7 @@
 
   /* Button */
   .shad-button_primary {
-    @apply bg-gradient-to-r from-[#ff218c] to-[#ff8d19] text-light-1 flex gap-2 !important;
+    @apply bg-gradient-to-r from-[#e54942] to-[#6b0f75] text-light-1 flex gap-2 !important;
   }
 
   .shad-button_dark_4 {

@@ -1,12 +1,13 @@
 
+import LoaderIcon from "/assets/icons/loader.svg"
 const Loader = () => {
   return (
     <div>
         <img
-        src="assets/icons/loader.svg"
+        src={LoaderIcon}
         alt="loader"
-        width={25}
-        height={25}/>
+        width={30}
+        height={30}/>
     </div>
   )
 }

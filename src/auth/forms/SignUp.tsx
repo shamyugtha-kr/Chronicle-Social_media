@@ -115,7 +115,7 @@ const navigate = useNavigate();
         height={100}/>
          <p className="text-light-1 small-medium md:base-regular mt-2">Moments that connect us.</p>
          <h2 className="h3-bold md:h2-bold pt-3 "> Create your account</h2>
-        <p className="text-light-3 small-medium md:base-regular mt-2">Please enter your deatils to use Chronicle</p>
+        <p className="text-light-3 small-medium md:base-regular mt-2">Please enter your deatils to use Vixen</p>
 
 
 
@@ -178,7 +178,7 @@ const navigate = useNavigate();
           )}
         />
         
-        <Button type="submit" className="bg-gradient-to-r from-[#ff218c] to-[#ff8d19]">  {isCreatingAccount ? (<div className="gap-2 flex-center">
+        <Button type="submit" className="bg-gradient-to-r from-[#e54942] to-[#6b0f75]">  {isCreatingAccount ? (<div className="gap-2 flex-center">
           <Loader/>Loading...</div>) : 
         (<div>Sign Up</div>)}</Button>
 

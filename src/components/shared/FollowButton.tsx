@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { followUser, getCurrentUser, unFollowUser } from "@/lib/appWrite/api";
-import Loader from "./Loader";
+
 
 
 type FollowButtonProps = {
@@ -26,9 +26,9 @@ const FollowButton = ({userId, } : FollowButtonProps) => {
 
     if(!currentUser){
         return(
-            <div className="flex-center w-full h-full">
-        <Loader />
-      </div>
+          <Button type="button" className="shad-button_primary px-8" onClick={() => {followUser(userId)}}>
+          Follow
+        </Button>
         )
     }
 
