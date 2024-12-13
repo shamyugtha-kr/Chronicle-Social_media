@@ -38,8 +38,8 @@ const PostDetails = () => {
           <img
             src={"/assets/icons/back.svg"}
             alt="back"
-            width={24}
-            height={24}
+            width={26}
+            height={26}
           />
           <p className="small-medium lg:base-medium">Back</p>
         </Button>
