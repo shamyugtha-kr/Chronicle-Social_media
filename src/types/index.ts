@@ -10,7 +10,7 @@ export type INavLink = {
     name: string;
     bio: string;
     imageId: string;
-    imageUrl: URL;
+    imageUrl: URL | string;
     file: File[];
   };
   
@@ -26,7 +26,7 @@ export type INavLink = {
     postId: string;
     caption: string;
     imageId: string;
-    imageUrl: URL;
+    imageUrl: URL | string;
     file: File[];
     location?: string;
     tags?: string;
