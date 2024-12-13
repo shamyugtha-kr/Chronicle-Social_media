@@ -9,9 +9,12 @@
     }
   ],
   "compilerOptions": {
+    "strict": true,
+    "strictNullChecks": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
+      
     }
   }
 }
